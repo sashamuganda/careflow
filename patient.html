@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal | CareFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .triage-result, .queue-status, .sms-fallback {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .sms-fallback {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+        .checklist-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+        }
+        .checklist-item input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+        .profile-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">CareFlow</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="patient.html" class="active">Patient Portal</a></li>
+                <li><a href="dashboard.html">Staff Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="hero">
+            <h1>Patient Portal</h1>
+            <p>Tell us how you're feeling and we'll guide you to the right care.</p>
+        </header>
+
+        <div id="patient-form-container" class="card" style="max-width: 600px; margin: 0 auto;">
+            <div class="profile-selector">
+                <label for="mock-profile">Select Mock Patient Profile:</label>
+                <select id="mock-profile">
+                    <option value="new">New Patient</option>
+                    <option value="p1">John Doe (History: Hypertension)</option>
+                    <option value="p2">Jane Smith (History: Asthma)</option>
+                    <option value="p3">Robert Brown (History: Diabetes)</option>
+                </select>
+            </div>
+
+            <form id="triage-form">
+                <div class="form-group">
+                    <label for="patient-name">Your Full Name</label>
+                    <input type="text" id="patient-name" required placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="symptoms-text">Describe your symptoms</label>
+                    <textarea id="symptoms-text" required placeholder="E.g. I have a sharp pain in my chest and feel dizzy..."></textarea>
+                </div>
+
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Check any that apply:</label>
+                <div class="checklist-group">
+                    <div class="checklist-item"><input type="checkbox" id="c-fever" value="Fever"> <label for="c-fever">Fever</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="c-cough" value="Cough"> <label for="c-cough">Cough</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="c-breath" value="Difficulty Breathing"> <label for="c-breath">Difficulty Breathing</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="c-dizzy" value="Dizziness"> <label for="c-dizzy">Dizziness</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="c-nausea" value="Nausea"> <label for="c-nausea">Nausea</label></div>
+                    <div class="checklist-item"><input type="checkbox" id="c-fatigue" value="Fatigue"> <label for="c-fatigue">Fatigue</label></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Get AI Triage Result</button>
+            </form>
+        </div>
+
+        <div id="triage-result" class="triage-result">
+            <h2 id="result-title">Triage Result</h2>
+            <div id="result-badge-container"></div>
+            <p id="result-urgency" style="font-weight: 700; margin: 10px 0;"></p>
+            <p id="result-dept" style="margin-bottom: 10px;"></p>
+            <p id="result-wait" style="margin-bottom: 20px; color: var(--secondary-color);"></p>
+            <button class="btn btn-primary" id="confirm-queue-btn">Confirm & Join Queue</button>
+        </div>
+
+        <div id="queue-status" class="queue-status">
+            <h2>Queue Status</h2>
+            <p>You have been added to the <span id="queue-dept-name" style="font-weight: bold;"></span> queue.</p>
+            <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color); margin: 20px 0;" id="queue-position">4</div>
+            <p>Patients ahead of you. Estimated wait: <span id="queue-time" style="font-weight: bold;"></span></p>
+            <p style="margin-top: 15px; font-size: 0.9rem; color: var(--secondary-color);">Stay on this page for live updates.</p>
+        </div>
+
+        <div id="sms-fallback" class="sms-fallback">
+            <h3>⚠️ Connection Alert</h3>
+            <p>We're having trouble reaching your device. An SMS with your triage details and queue position has been sent to your registered mobile number as a fallback.</p>
+        </div>
+    </main>
+
+    <footer class="container">
+        <p>&copy; 2023 CareFlow Prototype. All rights reserved.</p>
+    </footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/patient.js"></script>
+</body>
+</html>
