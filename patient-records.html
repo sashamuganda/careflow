@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Records | CareFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .patient-list-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .patient-list-item:last-child { border-bottom: none; }
+        .patient-list-item:hover, .patient-list-item.active { background: var(--accent-blue-light); }
+        .patient-list-item .p-avatar {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .patient-list-item .p-name { font-weight: 600; font-size: 0.9rem; }
+        .patient-list-item .p-id { font-size: 0.75rem; color: var(--text-muted); }
+        .patient-list-item .p-badge { margin-left: auto; }
+
+        /* Vital trends bars */
+        .vital-chart { display: flex; align-items: flex-end; gap: 6px; height: 140px; margin-top: 16px; }
+        .vital-bar {
+            flex: 1;
+            border-radius: 4px 4px 0 0;
+            transition: opacity 0.2s;
+        }
+        .vital-bar:hover { opacity: 0.75; }
+        .vital-chart-labels { display: flex; gap: 6px; margin-top: 8px; }
+        .vital-chart-labels span { flex: 1; text-align: center; font-size: 0.65rem; color: var(--text-muted); }
+
+        /* Tab pills */
+        .tab-pills { display: flex; gap: 8px; margin-bottom: 16px; }
+        .tab-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            background: none;
+        }
+        .tab-pill.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+        /* Timeline */
+        .timeline-item { display: flex; gap: 16px; margin-bottom: 20px; position: relative; }
+        .timeline-dot {
+            width: 10px; height: 10px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            top: 10px; left: 4px;
+            width: 2px; height: calc(100% + 18px);
+            background: var(--border-color);
+        }
+        .timeline-item:last-child .timeline-dot::after { display: none; }
+        .timeline-date { font-size: 0.65rem; text-transform: uppercase; color: var(--accent-blue); font-weight: 700; letter-spacing: 0.08em; }
+        .timeline-title { font-weight: 600; font-size: 0.9rem; margin: 2px 0; }
+        .timeline-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Prescription pill */
+        .rx-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .rx-icon {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Health metric card */
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .metric-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.08em; margin-bottom: 4px; }
+        .metric-value { font-size: 1.8rem; font-weight: 700; }
+        .metric-unit { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
+        .metric-status { font-size: 0.75rem; color: var(--success); margin-top: 2px; }
+    </style>
+</head>
+<body data-theme="dark">
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <h1>Clinical Curator</h1>
+            <p>General Hospital</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="patient.html" class="nav-link"><i class="fas fa-user-injured"></i> Patient Portal</a></li>
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-clipboard-list"></i> Staff Dashboard</a></li>
+            <li class="nav-item"><a href="appointments.html" class="nav-link"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+            <li class="nav-item"><a href="patient-records.html" class="nav-link active"><i class="fas fa-file-medical"></i> Patient Records</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn btn-primary btn-block"><i class="fas fa-plus"></i> New Consultation</button>
+            <div style="margin-top: 20px;">
+                <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 20px; padding: 10px; background: var(--bg-input); border-radius: 8px;">
+                <img src="https://i.pravatar.cc/150?u=julian" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover;">
+                <div>
+                    <p style="font-weight: 600; font-size: 0.85rem;">Dr. Julian Vance</p>
+                    <p style="font-size: 0.7rem; color: var(--text-muted);">Chief Surgeon</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" style="display: grid; grid-template-rows: auto 1fr; height: 100vh;">
+        <header class="top-header">
+            <div class="search-bar"><i class="fas fa-search"></i><input type="text" id="patient-search" placeholder="Search patient ID, name or labs..." oninput="filterPatients(this.value)"></div>
+            <div class="header-actions">
+                <nav class="header-links"><a href="#">Directives</a><a href="#">Labs</a><a href="#">Pharma</a></nav>
+                <button class="btn btn-danger"><i class="fas fa-star"></i> Emergency Alert</button>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <button class="icon-btn"><i class="fas fa-history"></i></button>
+                    <div style="width:32px;height:32px;background:#3b82f6;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">JS</div>
+                </div>
+            </div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 320px 1fr; height: 100%; overflow: hidden;">
+
+            <!-- Patient List Panel -->
+            <div style="border-right: 1px solid var(--border-color); overflow-y: auto; padding: 20px 0;">
+                <div style="padding: 0 20px 16px;">
+                    <h3 style="font-size: 1rem; font-weight: 600;">All Patients</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);">7 active records</p>
+                </div>
+                <div id="patient-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Patient Detail Panel -->
+            <div style="overflow-y: auto; padding: 32px;">
+                <div id="record-detail">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script src="js/shared.js"></script>
+<script>
+    const PATIENTS_DB = [
+        {
+            id: 'PX-8821-09',
+            name: 'Eleanor Vance',
+            age: 64,
+            sex: 'Female',
+            blood: 'A+',
+            status: 'critical',
+            initials: 'EV',
+            color: '#ef4444',
+            history: 'Hypertension, History of Bronchitis',
+            insight: {
+                level: 'CRITICAL ALERT',
+                levelClass: 'badge-critical',
+                text: 'High Risk: Evidence of progressive pulmonary vascular resistance. Pulmonary Hypertension suspected based on recent echocardiogram and BNP elevations (420 pg/mL). Immediate cardiology referral and right heart catheterization recommended to evaluate pressure gradients.',
+                probability: '89.4%',
+                confidence: 'High'
+            },
+            vitals: { bmi: '24.2', hr: '72', o2: '94', cholesterol: '190' },
+            vitalBars: [30, 50, 45, 95, 55, 70, 60],
+            vitalDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+            prescriptions: [
+                { name: 'Lisinopril 10mg', schedule: 'Daily, 08:00 AM', color: '#3b82f6' },
+                { name: 'Metformin 500mg', schedule: 'Twice daily', color: '#3b82f6' },
+                { name: 'Warfarin 5mg', schedule: 'As directed (PRN)', color: '#ef4444' },
+            ],
+            timeline: [
+                { date: 'Oct 12, 2023', title: 'Acute Bronchitis Episode', desc: 'Treated with Azithromycin. Patient reported shortness of breath post-recovery.' },
+                { date: 'Aug 05, 2023', title: 'Routine Wellness Visit', desc: 'BP 138/88. Recommended sodium reduction and lifestyle adjustment.' },
+                { date: 'Jan 22, 2023', title: 'Initial ID Registration', desc: 'System onboarding. Baseline diagnostics recorded.' },
+            ]
+        },
+        {
+            id: 'PX-7712-03',
+            name: 'Marcus Hall',
+            age: 45,
+            sex: 'Male',
+            blood: 'O+',
+            status: 'urgent',
+            initials: 'MH',
+            color: '#f59e0b',
+            history: 'Hypertension, High Cholesterol',
+            insight: {
+                level: 'HIGH ALERT',
+                levelClass: 'badge-urgent',
+                text: 'Moderate Risk: Patient reported recurring chest tightness and intermittent dizziness. ECG results pending. Blood pressure elevated at 154/95. Cardiology review recommended within 24 hours.',
+                probability: '72.1%',
+                confidence: 'Medium'
+            },
+            vitals: { bmi: '27.8', hr: '88', o2: '97', cholesterol: '230' },
+            vitalBars: [55, 65, 58, 80, 70, 62, 75],
+            vitalDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+            prescriptions: [
+                { name: 'Amlodipine 5mg', schedule: 'Daily, 09:00 AM', color: '#3b82f6' },
+                { name: 'Atorvastatin 20mg', schedule: 'Daily, evening', color: '#10b981' },
+            ],
+            timeline: [
+                { date: 'Sep 28, 2023', title: 'Elevated BP Check', desc: 'BP 154/95. Medication adjusted. Follow-up in 2 weeks.' },
+                { date: 'Jun 14, 2023', title: 'Lipid Panel', desc: 'Total cholesterol 230 mg/dL. Statin therapy initiated.' },
+            ]
+        },
+        {
+            id: 'PX-6601-11',
+            name: 'Priya Mehta',
+            age: 32,
+            sex: 'Female',
+            blood: 'B+',
+            status: 'stable',
+            initials: 'PM',
+            color: '#10b981',
+            history: 'Asthma, Allergy to Penicillin',
+            insight: {
+                level: 'STABLE CONTEXT',
+                levelClass: 'badge-stable',
+                text: 'Low Risk: Regular asthma check-in. Peak flow readings within normal range (85% predicted). Inhaler technique reviewed. Patient advised to continue current management plan. No escalation required.',
+                probability: '12.3%',
+                confidence: 'High'
+            },
+            vitals: { bmi: '21.4', hr: '68', o2: '99', cholesterol: '165' },
+            vitalBars: [40, 45, 42, 43, 45, 44, 46],
+            vitalDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+            prescriptions: [
+                { name: 'Salbutamol Inhaler', schedule: 'As needed', color: '#3b82f6' },
+                { name: 'Fluticasone 100mcg', schedule: 'Twice daily', color: '#10b981' },
+            ],
+            timeline: [
+                { date: 'Oct 01, 2023', title: 'Routine Asthma Review', desc: 'Peak flow 88% predicted. No acute symptoms. Continue current regimen.' },
+                { date: 'Mar 15, 2023', title: 'Allergy Test Panel', desc: 'Confirmed penicillin allergy. Alert added to record.' },
+            ]
+        },
+        {
+            id: 'PX-5503-07',
+            name: 'Robert Okafor',
+            age: 68,
+            sex: 'Male',
+            blood: 'AB-',
+            status: 'urgent',
+            initials: 'RO',
+            color: '#f59e0b',
+            history: 'Type 2 Diabetes, Neuropathy',
+            insight: {
+                level: 'HIGH ALERT',
+                levelClass: 'badge-urgent',
+                text: 'Moderate Risk: HbA1c elevated at 9.2%. Signs of peripheral neuropathy progression noted in lower limbs. Dietary compliance low. Endocrinology consult and diabetes educator referral recommended.',
+                probability: '68.5%',
+                confidence: 'Medium'
+            },
+            vitals: { bmi: '31.2', hr: '80', o2: '95', cholesterol: '210' },
+            vitalBars: [60, 78, 65, 85, 72, 80, 77],
+            vitalDays: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+            prescriptions: [
+                { name: 'Metformin 1000mg', schedule: 'Twice daily', color: '#3b82f6' },
+                { name: 'Insulin Glargine', schedule: 'Daily, bedtime', color: '#f59e0b' },
+                { name: 'Gabapentin 300mg', schedule: 'Three times daily', color: '#10b981' },
+            ],
+            timeline: [
+                { date: 'Oct 10, 2023', title: 'HbA1c Review', desc: 'HbA1c at 9.2%. Insulin dose adjusted.' },
+                { date: 'Jul 20, 2023', title: 'Neuropathy Assessment', desc: 'Mild peripheral neuropathy in feet. Gabapentin prescribed.' },
+            ]
+        }
+    ];
+
+    let currentPatient = PATIENTS_DB[0];
+    let filteredPatients = [...PATIENTS_DB];
+
+    function filterPatients(query) {
+        const q = query.toLowerCase();
+        filteredPatients = PATIENTS_DB.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.id.toLowerCase().includes(q)
+        );
+        renderPatientList();
+    }
+
+    function renderPatientList() {
+        const list = document.getElementById('patient-list');
+        list.innerHTML = '';
+
+        // Add real-world records from localStorage
+        const localPatients = getPatients().filter(p => p.status === 'waiting');
+        const localConverted = localPatients.map(p => ({
+            id: p.id, name: p.name,
+            initials: p.name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2),
+            status: p.urgency,
+            color: p.urgency === 'critical' ? '#ef4444' : p.urgency === 'urgent' ? '#f59e0b' : '#10b981',
+        }));
+
+        const allPatients = [...filteredPatients, ...localConverted];
+
+        allPatients.forEach(p => {
+            const item = document.createElement('div');
+            item.className = `patient-list-item ${p.id === currentPatient.id ? 'active' : ''}`;
+            item.innerHTML = `
+                <div class="p-avatar" style="background: ${p.color}22; color: ${p.color};">${p.initials || '??'}</div>
+                <div>
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-id">${p.id}</div>
+                </div>
+                <span class="badge p-badge badge-${p.status || 'stable'}" style="font-size: 0.6rem;">${(p.status || 'stable').toUpperCase()}</span>
+            `;
+            item.onclick = () => {
+                if (PATIENTS_DB.find(d => d.id === p.id)) {
+                    currentPatient = PATIENTS_DB.find(d => d.id === p.id);
+                    renderRecord();
+                }
+                document.querySelectorAll('.patient-list-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+            };
+            list.appendChild(item);
+        });
+    }
+
+    function renderRecord() {
+        const p = currentPatient;
+        const detail = document.getElementById('record-detail');
+
+        const barHTML = p.vitalBars.map((h, i) => {
+            const isSpike = h === Math.max(...p.vitalBars);
+            return `<div class="vital-bar" style="height: ${h}%; background: ${isSpike ? 'var(--danger)' : 'var(--accent-blue)'}; opacity: ${isSpike ? '1' : '0.5'};"></div>`;
+        }).join('');
+
+        const rxHTML = p.prescriptions.map(rx => `
+            <div class="rx-item">
+                <div class="rx-icon" style="background: ${rx.color}22; color: ${rx.color};">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">${rx.name}</p>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);">${rx.schedule}</p>
+                </div>
+            </div>
+        `).join('');
+
+        const tlHTML = p.timeline.map(t => `
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div>
+                    <div class="timeline-date">${t.date}</div>
+                    <div class="timeline-title">${t.title}</div>
+                    <div class="timeline-desc">${t.desc}</div>
+                </div>
+            </div>
+        `).join('');
+
+        detail.innerHTML = `
+            <!-- Header -->
+            <div style="margin-bottom: 8px;">
+                <span class="badge badge-stable" style="background: var(--bg-input); color: var(--text-secondary); font-size: 0.7rem;">STABLE CONTEXT</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 12px;">ID: #${p.id}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 2rem; font-weight: 700; line-height: 1.2;">${p.name}</h2>
+                    <div style="display: flex; gap: 32px; margin-top: 12px;">
+                        <div><p style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">Age</p><p style="font-weight: 700; font-size: 1.1rem;">${p.age} Years</p></div>
+                        <div><p style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">Sex</p><p style="font-weight: 700; font-size: 1.1rem;">${p.sex}</p></div>
+                        <div><p style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">Blood Type</p><p style="font-weight: 700; font-size: 1.1rem;">${p.blood}</p></div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline"><i class="fas fa-print"></i> Export Record</button>
+                    <button class="btn btn-primary"><i class="fas fa-edit"></i> Update Status</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 300px; gap: 24px; margin-bottom: 24px;">
+                <!-- Left Column -->
+                <div>
+                    <!-- AI Insight -->
+                    <div class="card ai-insight" style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <div style="background: var(--danger-light); color: var(--danger); width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-brain"></i></div>
+                                <div>
+                                    <p style="font-weight: 600; font-size: 0.9rem;">AI Diagnostic Insight</p>
+                                    <p style="font-size: 0.7rem; color: var(--text-muted);">Model CC-4 Alpha • Analyzed 2 mins ago</p>
+                                </div>
+                            </div>
+                            <span class="badge ${p.insight.levelClass}">${p.insight.level}</span>
+                        </div>
+                        <p style="line-height: 1.65; font-size: 0.9rem; margin-bottom: 20px;">${p.insight.text}</p>
+                        <div style="display: flex; gap: 40px;">
+                            <div><p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Probability</p><p style="font-size: 1.4rem; font-weight: 700;">${p.insight.probability}</p></div>
+                            <div><p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Confidence</p><p style="font-size: 1.4rem; font-weight: 700;">${p.insight.confidence}</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Vital Trends -->
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <h3>Vital Trends</h3>
+                            <div class="tab-pills">
+                                <button class="tab-pill active">Glucose</button>
+                                <button class="tab-pill">Blood Pressure</button>
+                                <button class="tab-pill">Oxygen</button>
+                            </div>
+                        </div>
+                        <div class="vital-chart">${barHTML}</div>
+                        <div class="vital-chart-labels">
+                            ${p.vitalDays.map(d => `<span>${d}</span>`).join('')}
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-top: 16px; font-size: 0.76rem;">
+                            <span><span style="display:inline-block; width:10px; height:10px; border-radius: 50%; background: var(--accent-blue); margin-right: 5px; opacity: 0.5;"></span>Target Range (80-120)</span>
+                            <span><span style="display:inline-block; width:10px; height:10px; border-radius: 50%; background: var(--danger); margin-right: 5px;"></span>Critical Spike</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Prescriptions -->
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3>Prescriptions</h3>
+                            <button class="icon-btn" style="color: var(--accent-blue);"><i class="fas fa-plus-circle"></i></button>
+                        </div>
+                        ${rxHTML}
+                    </div>
+
+                    <!-- Clinical Timeline -->
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px;">Clinical Timeline</h3>
+                        ${tlHTML}
+                        <a href="#" style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600;">VIEW FULL HISTORY <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Metrics -->
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <div class="metric-card">
+                    <div class="metric-label">BMI Index</div>
+                    <div class="metric-value">${p.vitals.bmi} <span class="metric-unit"></span></div>
+                    <div class="metric-status">Optimal</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Heart Rate</div>
+                    <div class="metric-value">${p.vitals.hr} <span class="metric-unit">BPM</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Oxygen Sat</div>
+                    <div class="metric-value">${p.vitals.o2} <span class="metric-unit">%</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Cholesterol</div>
+                    <div class="metric-value">${p.vitals.cholesterol} <span class="metric-unit">mg/dL</span></div>
+                </div>
+            </div>
+        `;
+
+        // Tab pill switching
+        document.querySelectorAll('.tab-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
+    // Theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const body = document.body;
+        const icon = document.querySelector('#theme-toggle i');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.className = 'fas fa-sun';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fas fa-moon';
+        }
+    });
+
+    // Init
+    renderPatientList();
+    renderRecord();
+</script>
+</body>
+</html>

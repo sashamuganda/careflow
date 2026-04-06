@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments | CareFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .cal-day-header {
+            padding: 12px 8px;
+            text-align: center;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .cal-day-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 12px 8px 8px;
+        }
+        .cal-day-number.today {
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px auto 4px;
+            font-size: 1.1rem;
+        }
+        .cal-day-number.muted { color: var(--text-muted); }
+
+        .cal-cell {
+            border-right: 1px solid var(--border-color);
+            min-height: 200px;
+            padding: 8px;
+            vertical-align: top;
+            background: var(--bg-card);
+            position: relative;
+        }
+        .cal-cell:last-child { border-right: none; }
+
+        .appt-block {
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .appt-block:hover { opacity: 0.85; }
+        .appt-block.specialist {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: var(--accent-blue);
+        }
+        .appt-block.routine {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--success);
+        }
+        .appt-block .appt-time { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
+        .appt-block .appt-name { font-weight: 600; }
+        .appt-block .appt-type { font-size: 0.7rem; color: var(--text-secondary); }
+
+        /* Today line */
+        .today-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: var(--danger);
+            top: 55%;
+            z-index: 5;
+        }
+        .today-dot {
+            position: absolute;
+            left: -4px;
+            top: -4px;
+            width: 10px; height: 10px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+
+        .upcoming-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--bg-input);
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .upcoming-item:hover { background: var(--border-color); }
+        .upcoming-item .avatar {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            background: var(--accent-blue-light);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem;
+            color: var(--accent-blue);
+            flex-shrink: 0;
+        }
+        .upcoming-item .time-badge {
+            position: absolute;
+            right: 16px; top: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+        .upcoming-item .appt-room {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <h1>Clinical Curator</h1>
+            <p>General Hospital</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="patient.html" class="nav-link"><i class="fas fa-user-injured"></i> Patient Portal</a></li>
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-clipboard-list"></i> Staff Dashboard</a></li>
+            <li class="nav-item"><a href="appointments.html" class="nav-link active"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+            <li class="nav-item"><a href="patient-records.html" class="nav-link"><i class="fas fa-file-medical"></i> Patient Records</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn btn-primary btn-block" onclick="document.getElementById('new-appt-modal').style.display='flex'">
+                <i class="fas fa-plus"></i> New Consultation
+            </button>
+            <div style="margin-top: 20px;">
+                <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-header">
+            <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search patients or schedules..."></div>
+            <div class="header-actions">
+                <nav class="header-links"><a href="#">Directives</a><a href="#">Labs</a><a href="#">Pharma</a></nav>
+                <button class="btn btn-danger"><i class="fas fa-star"></i> Emergency Alert</button>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <button class="icon-btn"><i class="fas fa-history"></i></button>
+                    <div style="width:32px;height:32px;background:#3b82f6;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">JS</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <!-- Page Header -->
+            <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px;">
+                <div>
+                    <p class="subtitle" style="text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Clinical Scheduling</p>
+                    <h2>Daily Continuity</h2>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+                        <button class="btn btn-outline" id="btn-week" onclick="setView('week')" style="border: none; border-radius: 0; border-right: 1px solid var(--border-color);">Week</button>
+                        <button class="btn btn-outline" id="btn-month" onclick="setView('month')" style="border: none; border-radius: 0;">Month</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="document.getElementById('new-appt-modal').style.display='flex'">
+                        <i class="fas fa-calendar-plus"></i> Book New Appointment
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
+
+                <!-- Calendar Section -->
+                <div class="card" style="padding: 24px;">
+                    <!-- Week Navigator -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="font-size: 1.3rem;" id="week-label">October 21 – 27, 2024</h3>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button class="icon-btn" onclick="changeWeek(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <button class="icon-btn" onclick="changeWeek(1)"><i class="fas fa-chevron-right"></i></button>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                                <span class="legend-dot" style="background: var(--accent-blue);"></span>Specialist
+                                <span class="legend-dot" style="background: var(--success); margin-left: 10px;"></span>Routine
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Grid -->
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Sidebar: Upcoming & Efficiency -->
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Upcoming</p>
+                                <h3>Today</h3>
+                            </div>
+                            <span style="background: var(--accent-blue); color: white; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 12px;">4 REMAINING</span>
+                        </div>
+
+                        <div class="upcoming-item" id="u-1">
+                            <div class="avatar">ER</div>
+                            <div style="flex: 1;">
+                                <p style="font-weight: 600; font-size: 0.9rem;">Elena Rostova</p>
+                                <p class="appt-room">Cardiology Unit • RM 402</p>
+                                <div style="margin-top: 8px; display: flex; gap: 8px;">
+                                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;">Check-in</button>
+                                    <button class="icon-btn" style="font-size: 0.8rem; color: var(--text-muted);">•••</button>
+                                </div>
+                            </div>
+                            <span class="time-badge">14:00</span>
+                        </div>
+
+                        <div class="upcoming-item">
+                            <div class="avatar" style="background: rgba(16,185,129,0.1); color: var(--success);">LS</div>
+                            <div style="flex: 1;">
+                                <p style="font-weight: 600; font-size: 0.9rem;">Liam Sterling</p>
+                                <p class="appt-room">Orthopedic Rehab • RM 12</p>
+                            </div>
+                            <span class="time-badge">15:30</span>
+                        </div>
+
+                        <div class="upcoming-item">
+                            <div class="avatar" style="background: rgba(245,158,11,0.1); color: var(--warning);">SJ</div>
+                            <div style="flex: 1;">
+                                <p style="font-weight: 600; font-size: 0.9rem;">Sarah Jenkins</p>
+                                <p class="appt-room">General Wellness • RM 305</p>
+                            </div>
+                            <span class="time-badge">16:15</span>
+                        </div>
+
+                        <button class="btn btn-outline btn-block" style="margin-top: 8px; font-size: 0.85rem;">View All Schedules</button>
+                    </div>
+
+                    <!-- Efficiency Index -->
+                    <div class="card" style="background: var(--accent-blue); color: white;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <i class="fas fa-chart-line" style="font-size: 0.85rem; opacity: 0.8;"></i>
+                            <p style="font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Efficiency Index</p>
+                        </div>
+                        <div style="font-size: 3.5rem; font-weight: 700; line-height: 1;">94%</div>
+                        <p style="margin-top: 12px; font-size: 0.82rem; opacity: 0.9; line-height: 1.5;">
+                            Clinician availability optimized across all departments today. No overflows detected.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- New Appointment Modal -->
+<div id="new-appt-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="card" style="width: 500px; max-width: 90vw;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3>Book New Appointment</h3>
+            <button class="icon-btn" onclick="document.getElementById('new-appt-modal').style.display='none'"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="form-group">
+            <label>Patient Name</label>
+            <input type="text" class="form-control" placeholder="Search patient...">
+        </div>
+        <div class="form-group">
+            <label>Department</label>
+            <select class="form-control">
+                <option>Cardiology Unit</option>
+                <option>General Practice</option>
+                <option>Emergency Care</option>
+                <option>Orthopedic Rehab</option>
+                <option>Neurology</option>
+                <option>Pediatrics</option>
+            </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Type</label>
+            <div style="display: flex; gap: 12px;">
+                <label style="display: flex; gap: 8px; font-size: 0.9rem;"><input type="radio" name="appt-type" value="specialist" checked> Specialist</label>
+                <label style="display: flex; gap: 8px; font-size: 0.9rem;"><input type="radio" name="appt-type" value="routine"> Routine</label>
+            </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="height: 50px;" onclick="bookAppointment()">
+            <i class="fas fa-calendar-check"></i> Confirm Booking
+        </button>
+    </div>
+</div>
+
+<script src="js/shared.js"></script>
+<script>
+    const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+    const MOCK_APPOINTMENTS = [
+        { day: 2, start: '09:00', end: '10:30', name: 'Elena Rostova', type: 'specialist', note: 'Cardiology Check' },
+        { day: 3, start: '11:15', end: '12:00', name: 'Markus Thorne', type: 'specialist', note: 'Follow-up' },
+        { day: 1, start: '13:30', end: '15:30', name: 'Isabella Chen', type: 'routine', note: 'Initial Consultation' },
+    ];
+
+    let weekOffset = 0;
+
+    function getWeekDates(offset) {
+        const now = new Date('2024-10-21');
+        now.setDate(now.getDate() + offset * 7);
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(now);
+            d.setDate(now.getDate() + i);
+            dates.push(d);
+        }
+        return dates;
+    }
+
+    function changeWeek(dir) {
+        weekOffset += dir;
+        renderCalendar();
+    }
+
+    function setView(v) {
+        document.getElementById('btn-week').style.background = v === 'week' ? 'var(--accent-blue)' : '';
+        document.getElementById('btn-week').style.color = v === 'week' ? 'white' : '';
+        document.getElementById('btn-month').style.background = v === 'month' ? 'var(--accent-blue)' : '';
+        document.getElementById('btn-month').style.color = v === 'month' ? 'white' : '';
+    }
+
+    function renderCalendar() {
+        const dates = getWeekDates(weekOffset);
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
+
+        // Label
+        const start = dates[0];
+        const end = dates[6];
+        document.getElementById('week-label').textContent = `${start.toLocaleDateString('en-US', {month:'long', day:'numeric'})} – ${end.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}`;
+
+        // Day headers
+        DAYS.forEach((d, i) => {
+            const hdr = document.createElement('div');
+            hdr.className = 'cal-day-header';
+            hdr.textContent = d;
+            grid.appendChild(hdr);
+        });
+
+        // Day cells
+        dates.forEach((date, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'cal-cell';
+
+            const isToday = (weekOffset === 0 && i === 2); // Wednesday
+
+            const numEl = document.createElement('div');
+            if (isToday) {
+                numEl.innerHTML = `<div class="cal-day-number today">${date.getDate()}</div>`;
+            } else {
+                numEl.innerHTML = `<div class="cal-day-number ${i > 4 ? 'muted' : ''}">${date.getDate()}</div>`;
+            }
+            cell.appendChild(numEl);
+
+            // Today line
+            if (isToday) {
+                const line = document.createElement('div');
+                line.className = 'today-line';
+                const dot = document.createElement('div');
+                dot.className = 'today-dot';
+                line.appendChild(dot);
+                cell.appendChild(line);
+            }
+
+            // Appointments
+            MOCK_APPOINTMENTS.filter(a => a.day === i).forEach(appt => {
+                const block = document.createElement('div');
+                block.className = `appt-block ${appt.type}`;
+                block.innerHTML = `
+                    <div class="appt-time">${appt.start} – ${appt.end}</div>
+                    <div class="appt-name">${appt.name}</div>
+                    <div class="appt-type">${appt.note}</div>
+                `;
+                cell.appendChild(block);
+            });
+
+            grid.appendChild(cell);
+        });
+    }
+
+    function bookAppointment() {
+        document.getElementById('new-appt-modal').style.display = 'none';
+        alert('Appointment booked successfully! (Prototype mode – no data saved)');
+    }
+
+    // Theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const body = document.body;
+        const icon = document.querySelector('#theme-toggle i');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.className = 'fas fa-sun';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fas fa-moon';
+        }
+    });
+
+    // Init
+    setView('week');
+    renderCalendar();
+</script>
+</body>
+</html>
