@@ -39,6 +39,7 @@
                     <nav class="header-links"><a href="#">Directives</a><a href="#">Labs</a><a href="#">Pharma</a></nav>
                     <button class="btn btn-danger"><i class="fas fa-star"></i> Emergency Alert</button>
                     <div class="icon-btn-group" style="display: flex; gap: 15px;">
+                        <button class="icon-btn mobile-search-trigger" id="mobile-search-trigger"><i class="fas fa-search"></i></button>
                         <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
                         <button class="icon-btn"><i class="fas fa-bell"></i></button>
                         <button class="icon-btn"><i class="fas fa-history"></i></button>
@@ -130,6 +131,82 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>Home</span>
+        </a>
+        <a href="patient.html" class="bottom-nav-item">
+            <i class="fas fa-user-injured"></i>
+            <span>Patient</span>
+        </a>
+        <a href="dashboard.html" class="bottom-nav-item active">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Staff</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="mobile-more-btn">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>More</span>
+        </a>
+    </nav>
+
+    <!-- FAB -->
+    <button class="fab" id="mobile-fab">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Mobile More Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <div class="brand">
+                    <h1>Clinical Curator</h1>
+                    <p>General Hospital</p>
+                </div>
+                <button class="icon-btn" id="close-mobile-menu"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mobile-menu-grid">
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Records</span>
+                </a>
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-book-medical"></i>
+                    <span>Directives</span>
+                </a>
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-flask"></i>
+                    <span>Labs</span>
+                </a>
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Pharma</span>
+                </a>
+                <a href="#" class="mobile-menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Search Overlay -->
+    <div class="mobile-search-overlay" id="mobile-search-overlay">
+        <button class="icon-btn" id="close-mobile-search"><i class="fas fa-arrow-left"></i></button>
+        <div class="search-bar" style="display: flex; flex: 1; width: auto;">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search...">
+        </div>
     </div>
 
     <script src="js/shared.js"></script>

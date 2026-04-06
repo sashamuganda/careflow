@@ -78,3 +78,63 @@ function seedInitialData() {
 
 // Initialize when scripts load
 seedInitialData();
+
+/**
+ * Mobile Interactions
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const moreBtn = document.getElementById('mobile-more-btn');
+    const menuOverlay = document.getElementById('mobile-menu-overlay');
+    const closeMenu = document.getElementById('close-mobile-menu');
+
+    const searchTrigger = document.getElementById('mobile-search-trigger');
+    const searchOverlay = document.getElementById('mobile-search-overlay');
+    const closeSearch = document.getElementById('close-mobile-search');
+
+    const fab = document.getElementById('mobile-fab');
+
+    // More Menu Toggle
+    if (moreBtn && menuOverlay && closeMenu) {
+        moreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            menuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        });
+
+        closeMenu.addEventListener('click', () => {
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scroll
+        });
+
+        menuOverlay.addEventListener('click', (e) => {
+            if (e.target === menuOverlay) {
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Search Overlay Toggle
+    if (searchTrigger && searchOverlay && closeSearch) {
+        searchTrigger.addEventListener('click', () => {
+            searchOverlay.classList.add('active');
+            searchOverlay.querySelector('input').focus();
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+        });
+    }
+
+    // FAB Action (Example: scroll to top or open new consultation)
+    if (fab) {
+        fab.addEventListener('click', () => {
+            // For prototype, we'll just show an alert or redirect to patient form
+            if (window.location.pathname.includes('patient.html')) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.location.href = 'patient.html';
+            }
+        });
+    }
+});
