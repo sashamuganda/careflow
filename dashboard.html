@@ -5,185 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard | CareFlow</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .dept-status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .dept-card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-        .dept-card h3 { font-size: 0.9rem; margin-bottom: 10px; }
-        .dept-card .count { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
-
-        .patient-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .patient-table th, .patient-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .patient-table th {
-            background-color: #f1f3f5;
-            font-weight: 600;
-        }
-        .patient-table tr:hover { background-color: #f8f9fa; }
-
-        .bottleneck-alert {
-            display: none;
-            background-color: var(--danger-color);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        .availability-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        .availability-select {
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">CareFlow</a>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="patient.html">Patient Portal</a></li>
-                <li><a href="dashboard.html" class="active">Staff Dashboard</a></li>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Clinical Curator</h1>
+                <p>General Hospital</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="patient.html" class="nav-link"><i class="fas fa-user-injured"></i> Patient Portal</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-clipboard-list"></i> Staff Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-file-medical"></i> Patient Records</a></li>
             </ul>
-        </div>
-    </nav>
-
-    <main class="container">
-        <header class="hero" style="padding: 30px 0;">
-            <h1>Hospital Staff Dashboard</h1>
-            <p>Live patient flow and department management.</p>
-        </header>
-
-        <div id="bottleneck-alert" class="bottleneck-alert">
-            <strong>⚠️ Bottleneck Alert:</strong> High patient volume detected in <span id="bottleneck-dept"></span>. Please reassign resources.
-        </div>
-
-        <section class="dept-status-grid">
-            <div class="dept-card">
-                <h3>Emergency</h3>
-                <div class="count" id="count-emergency">0</div>
-                <p>Waiting</p>
-            </div>
-            <div class="dept-card">
-                <h3>General</h3>
-                <div class="count" id="count-general">0</div>
-                <p>Waiting</p>
-            </div>
-            <div class="dept-card">
-                <h3>Urgent Care</h3>
-                <div class="count" id="count-urgent">0</div>
-                <p>Waiting</p>
-            </div>
-            <div class="dept-card">
-                <h3>Pediatrics</h3>
-                <div class="count" id="count-pediatrics">0</div>
-                <p>Waiting</p>
-            </div>
-        </section>
-
-        <div class="dashboard-grid">
-            <section>
-                <h2>Live Patient Queue</h2>
-                <table class="patient-table">
-                    <thead>
-                        <tr>
-                            <th>Patient</th>
-                            <th>Symptoms</th>
-                            <th>Triage</th>
-                            <th>Wait Time</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patient-queue-body">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </section>
-
-            <aside>
-                <div class="card">
-                    <h2>Doctor Availability</h2>
-                    <div id="doctor-availability-list">
-                        <div class="availability-toggle">
-                            <span>Dr. Sarah Smith</span>
-                            <select class="availability-select">
-                                <option value="Available">Available</option>
-                                <option value="Busy">Busy</option>
-                                <option value="Off Duty">Off Duty</option>
-                            </select>
-                        </div>
-                        <div class="availability-toggle">
-                            <span>Dr. Mark Jones</span>
-                            <select class="availability-select">
-                                <option value="Available">Available</option>
-                                <option value="Busy" selected>Busy</option>
-                                <option value="Off Duty">Off Duty</option>
-                            </select>
-                        </div>
-                        <div class="availability-toggle">
-                            <span>Dr. Elena Rodriguez</span>
-                            <select class="availability-select">
-                                <option value="Available">Available</option>
-                                <option value="Busy">Busy</option>
-                                <option value="Off Duty">Off Duty</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary btn-block" style="margin-top: 15px;" id="refresh-dashboard">Force Refresh</button>
-                    <p style="margin-top: 10px; font-size: 0.8rem; color: #666; text-align: center;">Auto-refreshes every 10 seconds.</p>
+            <div class="sidebar-footer">
+                <button class="btn btn-primary btn-block"><i class="fas fa-plus"></i> New Consultation</button>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
                 </div>
-            </aside>
-        </div>
-    </main>
+            </div>
+        </aside>
 
-    <footer class="container">
-        <p>&copy; 2026 CareFlow Prototype. All rights reserved.</p>
-    </footer>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search patients, ID, or metrics..."></div>
+                <div class="header-actions">
+                    <nav class="header-links"><a href="#">Directives</a><a href="#">Labs</a><a href="#">Pharma</a></nav>
+                    <button class="btn btn-danger"><i class="fas fa-star"></i> Emergency Alert</button>
+                    <div class="icon-btn-group" style="display: flex; gap: 15px;">
+                        <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                        <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                        <button class="icon-btn"><i class="fas fa-history"></i></button>
+                        <div class="user-avatar" style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">JS</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header">
+                    <p class="subtitle" style="text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">System Overview</p>
+                    <h2>Executive Dashboard</h2>
+                    <p class="subtitle">Real-time clinical intelligence and operational throughput metrics.</p>
+                </div>
+
+                <div id="bottleneck-alert" class="card" style="display: none; border-color: var(--danger); background: var(--danger-light); margin-bottom: 24px;">
+                    <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> <strong>Bottleneck Alert:</strong> High patient volume detected in <span id="bottleneck-dept"></span>.</p>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-header"><span>Patients in Triage</span><i class="fas fa-users"></i></div>
+                        <div class="kpi-value"><span id="count-total">0</span> <span class="kpi-trend up">+12%</span></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header"><span>Average Wait Time</span><i class="fas fa-clock"></i></div>
+                        <div class="kpi-value">18m <span class="kpi-trend down">-4m</span></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header"><span>Occupancy Rate</span><i class="fas fa-bed"></i></div>
+                        <div class="kpi-value">88% <span class="kpi-trend">Critical</span></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header"><span>Staff on Duty</span><i class="fas fa-stethoscope"></i></div>
+                        <div class="kpi-value">124 <span class="kpi-trend">Active Shift</span></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-layout">
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Recent Admissions</h3>
+                            <a href="#" class="text-accent" style="font-size: 0.85rem; color: var(--accent-blue);">View Full Queue <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>ID / Case</th>
+                                    <th>Priority</th>
+                                    <th>Assigned Physician</th>
+                                    <th>Time In</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="patient-queue-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <aside class="dashboard-aside" style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="card">
+                            <h3>Department Status</h3>
+                            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-input); border-radius: 8px;">
+                                    <div style="background: var(--danger-light); color: var(--danger); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <div style="flex: 1;"><p style="font-size: 0.9rem; font-weight: 600;">ICU Overflow</p><p style="font-size: 0.75rem; color: var(--text-secondary);">98% capacity reached</p></div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-input); border-radius: 8px;">
+                                    <div style="background: var(--accent-blue-light); color: var(--accent-blue); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-bolt"></i></div>
+                                    <div style="flex: 1;"><p style="font-size: 0.9rem; font-weight: 600;">ER Response Time</p><p style="font-size: 0.75rem; color: var(--text-secondary);">Optimum (under 5m)</p></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>On-Call Administrator</h3>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
+                                <div class="admin-avatar" style="width: 48px; height: 48px; border-radius: 8px; background: #ddd; overflow: hidden;"><img src="https://i.pravatar.cc/150?u=elena" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 600;">Dr. Elena Rodriguez</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Internal Medicine</p>
+                                </div>
+                                <button class="icon-btn" style="background: var(--bg-input); width: 32px; height: 32px; border-radius: 20px; font-size: 0.9rem;"><i class="fas fa-phone"></i></button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script src="js/shared.js"></script>
     <script src="js/dashboard.js"></script>
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            const icon = document.querySelector('#theme-toggle i');
+            if (theme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-moon';
+            }
+        });
+    </script>
 </body>
 </html>

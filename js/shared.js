@@ -34,9 +34,10 @@ function seedInitialData() {
         const initialPatients = [
             {
                 id: 'mock-1',
-                name: 'Alice Johnson',
+                caseId: '#ER-992-B',
+                name: 'Jonathan Sterling',
                 symptoms: 'Mild fever and cough',
-                urgency: 'non-urgent',
+                urgency: 'stable',
                 department: 'General Practice',
                 waitTime: '45 mins',
                 status: 'waiting',
@@ -46,7 +47,8 @@ function seedInitialData() {
             },
             {
                 id: 'mock-2',
-                name: 'Bob Wilson',
+                caseId: '#ER-012-A',
+                name: 'Maria Laurent',
                 symptoms: 'Sudden chest pain',
                 urgency: 'critical',
                 department: 'Emergency Care',
@@ -58,10 +60,11 @@ function seedInitialData() {
             },
             {
                 id: 'mock-3',
-                name: 'Charlie Davis',
+                caseId: '#ER-144-C',
+                name: 'Kevin Wright',
                 symptoms: 'Persistent headache and nausea',
                 urgency: 'urgent',
-                department: 'Neurology',
+                department: 'Internal Medicine',
                 waitTime: '15 mins',
                 status: 'waiting',
                 history: 'Migraines',

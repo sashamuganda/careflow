@@ -5,126 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Portal | CareFlow</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .triage-result, .queue-status, .sms-fallback {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            background: #fff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .sms-fallback {
-            background-color: #fff3cd;
-            border: 1px solid #ffeeba;
-            color: #856404;
-        }
-        .checklist-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .checklist-item {
-            display: flex;
-            align-items: center;
-        }
-        .checklist-item input {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-        }
-        .profile-selector {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #e9ecef;
-            border-radius: 6px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">CareFlow</a>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="patient.html" class="active">Patient Portal</a></li>
-                <li><a href="dashboard.html">Staff Dashboard</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="container">
-        <header class="hero">
-            <h1>Patient Portal</h1>
-            <p>Tell us how you're feeling and we'll guide you to the right care.</p>
-        </header>
-
-        <div id="patient-form-container" class="card" style="max-width: 600px; margin: 0 auto;">
-            <div class="profile-selector">
-                <label for="mock-profile">Select Mock Patient Profile:</label>
-                <select id="mock-profile">
-                    <option value="new">New Patient</option>
-                    <option value="p1">John Doe (History: Hypertension)</option>
-                    <option value="p2">Jane Smith (History: Asthma)</option>
-                    <option value="p3">Robert Brown (History: Diabetes)</option>
-                </select>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Clinical Curator</h1>
+                <p>General Hospital</p>
             </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="patient.html" class="nav-link active"><i class="fas fa-user-injured"></i> Patient Portal</a></li>
+                <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-clipboard-list"></i> Staff Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-file-medical"></i> Patient Records</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-primary btn-block"><i class="fas fa-plus"></i> New Consultation</button>
+            </div>
+        </aside>
 
-            <form id="triage-form">
-                <div class="form-group">
-                    <label for="patient-name">Your Full Name</label>
-                    <input type="text" id="patient-name" required placeholder="Enter your name">
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search for medical help..."></div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                    <div class="user-avatar" style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">P</div>
+                </div>
+            </header>
+
+            <div class="page-container">
+                <div id="patient-form-container">
+                    <div class="page-header">
+                        <p class="subtitle" style="text-transform: uppercase;">Intake Form</p>
+                        <h2>Start AI Triage</h2>
+                        <p class="subtitle">Tell us your symptoms and our AI will guide you to the right care.</p>
+                    </div>
+
+                    <div class="card" style="max-width: 800px;">
+                        <div class="form-group">
+                            <label>Quick Profile Selection (Simulation)</label>
+                            <select id="mock-profile" class="form-control">
+                                <option value="new">New Patient</option>
+                                <option value="p1">John Doe (Hypertension)</option>
+                                <option value="p2">Jane Smith (Asthma)</option>
+                                <option value="p3">Robert Brown (Diabetes)</option>
+                            </select>
+                        </div>
+
+                        <form id="triage-form">
+                            <div class="form-group">
+                                <label for="patient-name">Full Name</label>
+                                <input type="text" id="patient-name" class="form-control" placeholder="e.g. Eleanor Vance" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="symptoms-text">How are you feeling today?</label>
+                                <textarea id="symptoms-text" class="form-control" style="min-height: 120px;" placeholder="Describe your symptoms in detail..." required></textarea>
+                            </div>
+
+                            <div style="margin-bottom: 24px;">
+                                <label style="display: block; margin-bottom: 12px; font-weight: 600;">Check any specific symptoms:</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <label style="display: flex; gap: 10px; font-size: 0.9rem;"><input type="checkbox" value="Fever"> Fever</label>
+                                    <label style="display: flex; gap: 10px; font-size: 0.9rem;"><input type="checkbox" value="Cough"> Cough</label>
+                                    <label style="display: flex; gap: 10px; font-size: 0.9rem;"><input type="checkbox" value="Breath"> Shortness of Breath</label>
+                                    <label style="display: flex; gap: 10px; font-size: 0.9rem;"><input type="checkbox" value="Dizzy"> Dizziness</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block" style="height: 50px; font-size: 1rem;">Process Symptoms with AI</button>
+                        </form>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="symptoms-text">Describe your symptoms</label>
-                    <textarea id="symptoms-text" required placeholder="E.g. I have a sharp pain in my chest and feel dizzy..."></textarea>
+                <!-- Triage Result (Hidden by default) -->
+                <div id="triage-result" style="display: none;">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <p class="subtitle" style="text-transform: uppercase;">ID: #PX-8821-09</p>
+                            <h2 id="display-name">Eleanor Vance</h2>
+                            <div style="display: flex; gap: 24px; margin-top: 10px;">
+                                <div><p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Age</p><p style="font-weight: 600;">64 Years</p></div>
+                                <div><p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Sex</p><p style="font-weight: 600;">Female</p></div>
+                                <div><p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Blood Type</p><p style="font-weight: 600;">A Positive</p></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-outline"><i class="fas fa-file-export"></i> Export Record</button>
+                            <button class="btn btn-primary" id="confirm-queue-btn">Confirm & Join Queue</button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-layout">
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card ai-insight" id="ai-insight-card">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                    <div style="display: flex; gap: 12px; align-items: center;">
+                                        <div style="background: var(--danger-light); color: var(--danger); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-sparkles"></i></div>
+                                        <h4 style="font-weight: 600;">AI Diagnostic Insight</h4>
+                                    </div>
+                                    <span class="badge badge-critical" id="result-badge">Critical Alert</span>
+                                </div>
+                                <p style="line-height: 1.6; margin-bottom: 24px;">
+                                    <strong>High Risk:</strong> Evidence of <span id="result-urgency">progressive pulmonary vascular resistance</span>. 
+                                    <span id="result-dept">Pulmonary Hypertension suspected</span> based on reported symptoms. Immediate cardiology referral recommended.
+                                </p>
+                                <div style="display: flex; gap: 40px;">
+                                    <div><p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Probability</p><p style="font-size: 1.5rem; font-weight: 700;">89.4%</p></div>
+                                    <div><p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Confidence</p><p style="font-size: 1.5rem; font-weight: 700;">High</p></div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3>Vital Trends</h3>
+                                <div style="height: 200px; display: flex; align-items: flex-end; gap: 8px; margin-top: 20px;">
+                                    <div style="flex: 1; height: 40%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 60%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 50%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 90%; background: var(--danger); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 70%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                                    <div style="flex: 1; height: 80%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <aside style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <h3>Prescriptions</h3>
+                                    <i class="fas fa-plus-circle" style="color: var(--text-secondary);"></i>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="display: flex; gap: 12px; align-items: center; padding: 12px; background: var(--bg-input); border-radius: 8px;">
+                                        <div style="background: var(--accent-blue); color: white; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-pills"></i></div>
+                                        <div><p style="font-weight: 600; font-size: 0.9rem;">Lisinopril 10mg</p><p style="font-size: 0.75rem; color: var(--text-secondary);">Daily, 08:00 AM</p></div>
+                                    </div>
+                                    <div style="display: flex; gap: 12px; align-items: center; padding: 12px; background: var(--bg-input); border-radius: 8px;">
+                                        <div style="background: var(--accent-blue); color: white; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-pills"></i></div>
+                                        <div><p style="font-weight: 600; font-size: 0.9rem;">Metformin 500mg</p><p style="font-size: 0.75rem; color: var(--text-secondary);">Twice daily</p></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" id="queue-status" style="display: none; background: var(--accent-blue); color: white;">
+                                <h3>Active Queue Status</h3>
+                                <div style="font-size: 3rem; font-weight: 700; margin: 10px 0;" id="queue-position">4</div>
+                                <p style="font-size: 0.85rem; opacity: 0.9;">Patients ahead of you. Est. wait: <span id="queue-time" style="font-weight: bold;">20m</span></p>
+                                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                                    <p style="font-size: 0.75rem;">Assigned: <span id="queue-dept-name">Emergency Care</span></p>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
                 </div>
 
-                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Check any that apply:</label>
-                <div class="checklist-group">
-                    <div class="checklist-item"><input type="checkbox" id="c-fever" value="Fever"> <label for="c-fever">Fever</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="c-cough" value="Cough"> <label for="c-cough">Cough</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="c-breath" value="Difficulty Breathing"> <label for="c-breath">Difficulty Breathing</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="c-dizzy" value="Dizziness"> <label for="c-dizzy">Dizziness</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="c-nausea" value="Nausea"> <label for="c-nausea">Nausea</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="c-fatigue" value="Fatigue"> <label for="c-fatigue">Fatigue</label></div>
+                <div id="sms-fallback" style="display: none; position: fixed; bottom: 32px; right: 32px; max-width: 350px;" class="card">
+                    <p class="text-warning"><strong><i class="fas fa-comment-sms"></i> SMS Backup Active:</strong> Details sent to your mobile as connection is unstable.</p>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Get AI Triage Result</button>
-            </form>
-        </div>
-
-        <div id="triage-result" class="triage-result">
-            <h2 id="result-title">Triage Result</h2>
-            <div id="result-badge-container"></div>
-            <p id="result-urgency" style="font-weight: 700; margin: 10px 0;"></p>
-            <p id="result-dept" style="margin-bottom: 10px;"></p>
-            <p id="result-wait" style="margin-bottom: 20px; color: var(--secondary-color);"></p>
-            <button class="btn btn-primary" id="confirm-queue-btn">Confirm & Join Queue</button>
-        </div>
-
-        <div id="queue-status" class="queue-status">
-            <h2>Queue Status</h2>
-            <p>You have been added to the <span id="queue-dept-name" style="font-weight: bold;"></span> queue.</p>
-            <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color); margin: 20px 0;" id="queue-position">4</div>
-            <p>Patients ahead of you. Estimated wait: <span id="queue-time" style="font-weight: bold;"></span></p>
-            <p style="margin-top: 15px; font-size: 0.9rem; color: var(--secondary-color);">Stay on this page for live updates.</p>
-        </div>
-
-        <div id="sms-fallback" class="sms-fallback">
-            <h3>⚠️ Connection Alert</h3>
-            <p>We're having trouble reaching your device. An SMS with your triage details and queue position has been sent to your registered mobile number as a fallback.</p>
-        </div>
-    </main>
-
-    <footer class="container">
-        <p>&copy; 2026 CareFlow Prototype. All rights reserved.</p>
-    </footer>
+            </div>
+        </main>
+    </div>
 
     <script src="js/shared.js"></script>
     <script src="js/patient.js"></script>
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            const icon = document.querySelector('#theme-toggle i');
+            if (theme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-moon';
+            }
+        });
+    </script>
 </body>
 </html>

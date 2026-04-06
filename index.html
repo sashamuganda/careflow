@@ -3,44 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareFlow | Smart Healthcare Platform</title>
+    <title>CareFlow | Clinical Curator</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">CareFlow</a>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="patient.html">Patient Portal</a></li>
-                <li><a href="dashboard.html">Staff Dashboard</a></li>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Clinical Curator</h1>
+                <p>General Hospital</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link active">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="patient.html" class="nav-link">
+                        <i class="fas fa-user-injured"></i> Patient Portal
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-clipboard-list"></i> Staff Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i> Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-file-medical"></i> Patient Records
+                    </a>
+                </li>
             </ul>
-        </div>
-    </nav>
 
-    <main class="container">
-        <header class="hero">
-            <h1>Smart Hospital & Patient Platform</h1>
-            <p>Connecting smart queueing, AI triage, and hospital management in one smooth flow.</p>
-        </header>
-
-        <section class="portal-selection">
-            <div class="card">
-                <h2>Patient Portal</h2>
-                <p>Check symptoms, get AI-powered triage, and view live wait times.</p>
-                <a href="patient.html" class="btn btn-primary">Enter Patient Portal</a>
+            <div class="sidebar-footer">
+                <button class="btn btn-primary btn-block">
+                    <i class="fas fa-plus"></i> New Consultation
+                </button>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> Support</a>
+                </div>
             </div>
-            <div class="card">
-                <h2>Hospital Dashboard</h2>
-                <p>Monitor patient flow, manage department status, and track doctor availability.</p>
-                <a href="dashboard.html" class="btn btn-secondary">Enter Staff Dashboard</a>
-            </div>
-        </section>
-    </main>
+        </aside>
 
-    <footer class="container">
-        <p>&copy; 2026 CareFlow Prototype. All rights reserved.</p>
-    </footer>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search patients, ID, or metrics...">
+                </div>
+
+                <div class="header-actions">
+                    <nav class="header-links">
+                        <a href="#">Directives</a>
+                        <a href="#">Labs</a>
+                        <a href="#">Pharma</a>
+                    </nav>
+                    <button class="btn btn-danger">
+                        <i class="fas fa-star"></i> Emergency Alert
+                    </button>
+                    <div class="icon-btn-group" style="display: flex; gap: 15px;">
+                        <button class="icon-btn" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                        <button class="icon-btn"><i class="fas fa-bell"></i></button>
+                        <button class="icon-btn"><i class="fas fa-history"></i></button>
+                        <div class="user-avatar" style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            JS
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header">
+                    <p class="subtitle" style="text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Home Overview</p>
+                    <h2>Welcome back, Dr. Smith</h2>
+                    <p class="subtitle">Here is what is happening at CareFlow today.</p>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span>Patients in Triage</span>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="kpi-value">42 <span class="kpi-trend up">+12%</span></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span>Average Wait Time</span>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="kpi-value">18m <span class="kpi-trend down">-4m</span></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span>Occupancy Rate</span>
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <div class="kpi-value">88% <span class="kpi-trend">Critical</span></div>
+                        <p class="kpi-desc">Threshold reached</p>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-header">
+                            <span>Staff on Duty</span>
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="kpi-value">124 <span class="kpi-trend">Active</span></div>
+                        <p class="kpi-desc">Across all departments</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-layout">
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Patient Flow Trends</h3>
+                            <div class="chart-tabs">
+                                <button class="btn btn-outline btn-sm active">24H</button>
+                                <button class="btn btn-outline btn-sm">7D</button>
+                            </div>
+                        </div>
+                        <div class="mock-chart" style="height: 250px; display: flex; align-items: flex-end; gap: 15px; padding-bottom: 20px;">
+                            <div style="flex: 1; height: 30%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                            <div style="flex: 1; height: 45%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                            <div style="flex: 1; height: 70%; background: var(--accent-blue); border-radius: 4px;"></div>
+                            <div style="flex: 1; height: 40%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                            <div style="flex: 1; height: 85%; background: var(--accent-blue); border-radius: 4px;"></div>
+                            <div style="flex: 1; height: 50%; background: var(--accent-blue-light); border-radius: 4px;"></div>
+                        </div>
+                    </div>
+
+                    <aside class="dashboard-aside" style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="card">
+                            <h3>Department Status</h3>
+                            <ul style="list-style: none; margin-top: 15px;">
+                                <li style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                    <div style="background: var(--danger-light); color: var(--danger); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <div>
+                                        <p style="font-weight: 600;">ICU Overflow</p>
+                                        <p style="font-size: 0.8rem; color: var(--text-secondary);">98% capacity reached</p>
+                                    </div>
+                                </li>
+                                <li style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                    <div style="background: var(--accent-blue-light); color: var(--accent-blue); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-bolt"></i></div>
+                                    <div>
+                                        <p style="font-weight: 600;">ER Response Time</p>
+                                        <p style="font-size: 0.8rem; color: var(--text-secondary);">Optimum (under 5m)</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card" style="background: var(--accent-blue); color: white;">
+                            <h3>Efficiency Index</h3>
+                            <div style="font-size: 3rem; font-weight: 700; margin: 10px 0;">94%</div>
+                            <p style="font-size: 0.85rem; opacity: 0.9;">Clinician availability optimized across all departments today. No overflows detected.</p>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/shared.js"></script>
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            const icon = document.querySelector('#theme-toggle i');
+            if (theme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-moon';
+            }
+        });
+    </script>
 </body>
 </html>

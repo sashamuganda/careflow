@@ -3,8 +3,8 @@
 const triageForm = document.getElementById('triage-form');
 const mockProfileSelect = document.getElementById('mock-profile');
 const patientNameInput = document.getElementById('patient-name');
-const triageResultDiv = document.getElementById('triage-result');
 const patientFormContainer = document.getElementById('patient-form-container');
+const triageResultDiv = document.getElementById('triage-result');
 const confirmQueueBtn = document.getElementById('confirm-queue-btn');
 const queueStatusDiv = document.getElementById('queue-status');
 const smsFallbackDiv = document.getElementById('sms-fallback');
@@ -42,32 +42,37 @@ function simulateTriage(symptoms, profileId) {
     KEYWORDS.NON_URGENT.forEach(kw => { if (symptomsLower.includes(kw)) score += 1; });
 
     // Simple rule-based logic
-    let urgency = 'non-urgent';
+    let urgency = 'stable';
     let department = 'General Practice';
     let waitTime = '60 mins';
-    let badgeClass = 'badge-green';
+    let badgeClass = 'badge-stable';
+    let insightText = "Symptoms appear consistent with minor ailment. Monitoring recommended.";
 
     if (score >= 10 || symptomsLower.includes('chest') || symptomsLower.includes('breath')) {
         urgency = 'critical';
         department = 'Emergency Care';
         waitTime = 'Immediate';
-        badgeClass = 'badge-red';
+        badgeClass = 'badge-critical';
+        insightText = "High Risk: Evidence of acute respiratory or cardiac distress detected. Pulmonary/Cardiac emergency suspected. Immediate intervention required.";
     } else if (score >= 5) {
         urgency = 'urgent';
         department = 'Urgent Care / Internal Medicine';
         waitTime = '20 mins';
-        badgeClass = 'badge-orange';
+        badgeClass = 'badge-urgent';
+        insightText = "Moderate Risk: Symptoms suggest acute progression. Further clinical assessment in Urgent Care required within 20 mins.";
     }
 
     return {
-        id: 'p-' + Date.now(),
-        name: patientNameInput.value,
+        id: 'PX-' + Math.floor(Math.random() * 9000 + 1000),
+        caseId: 'ER-' + Math.floor(Math.random() * 900 + 100) + '-A',
+        name: patientNameInput.value || 'Anonymous',
         symptoms: symptoms,
         history: history,
         urgency: urgency,
         department: department,
         waitTime: waitTime,
         badgeClass: badgeClass,
+        insight: insightText,
         status: 'waiting',
         timestamp: Date.now()
     };
@@ -85,25 +90,21 @@ triageForm.addEventListener('submit', (e) => {
     // Display results
     patientFormContainer.style.display = 'none';
     triageResultDiv.style.display = 'block';
-    triageResultDiv.classList.add(`triage-${currentTriageData.urgency}`);
 
-    document.getElementById('result-badge-container').innerHTML = `<span class="badge ${currentTriageData.badgeClass}">${currentTriageData.urgency}</span>`;
-    document.getElementById('result-urgency').innerText = `Urgency Level: ${currentTriageData.urgency.toUpperCase()}`;
-    document.getElementById('result-dept').innerText = `Recommended Department: ${currentTriageData.department}`;
-    document.getElementById('result-wait').innerText = `Estimated Wait Time: ${currentTriageData.waitTime}`;
+    // Update UI elements
+    document.getElementById('display-name').innerText = currentTriageData.name;
+    document.getElementById('result-badge').innerText = currentTriageData.urgency.toUpperCase();
+    document.getElementById('result-badge').className = `badge ${currentTriageData.badgeClass}`;
+    document.getElementById('result-urgency').innerText = currentTriageData.urgency.toUpperCase() + ' Risk Level';
+    document.getElementById('result-dept').innerText = currentTriageData.insight;
 });
 
 // Handle queue confirmation
-confirmQueueBtn.addEventListener('submit', (e) => {
-    // This button's default type is submit if it was in form, but it's not.
-    // Making it an event listener on click.
-});
-
 confirmQueueBtn.onclick = () => {
     // Save to LocalStorage
     const patients = getPatients();
 
-    // Add position based on current queue length in that department
+    // Add position based on current queue length
     const deptPatients = patients.filter(p => p.department === currentTriageData.department && p.status === 'waiting');
     currentTriageData.position = deptPatients.length + 1;
 
@@ -111,14 +112,16 @@ confirmQueueBtn.onclick = () => {
     savePatients(patients);
 
     // Show queue status
-    triageResultDiv.style.display = 'none';
     queueStatusDiv.style.display = 'block';
     document.getElementById('queue-dept-name').innerText = currentTriageData.department;
     document.getElementById('queue-position').innerText = currentTriageData.position;
     document.getElementById('queue-time').innerText = currentTriageData.waitTime;
 
-    // Simulate SMS fallback logic
-    // We'll trigger it after 5 seconds to simulate a "failed notification"
+    // Change button text to indicate success
+    confirmQueueBtn.innerText = "Check-in Confirmed";
+    confirmQueueBtn.disabled = true;
+
+    // Simulate SMS fallback logic (clinical alert from image)
     setTimeout(() => {
         smsFallbackDiv.style.display = 'block';
     }, 5000);
